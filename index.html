@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en" data-skin="classic" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>My Text Game</title>
+    <link rel="stylesheet" href="./ui.css" />
+    <link rel="stylesheet" href="./style.css" />
+    <!-- (Optional) small perf win: let the browser warm up the CDN connection -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  </head>
+  <body>
+    <div id="layout">
+      <div id="app"></div>
+    </div>
+
+    <!-- Pako (classic script) -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"
+      integrity="sha384-rNlaE5fs9dGIjmxWDALQh/RBAaGRYT5ChrzHo6tRfgrZ36iRFAiquP5g41Jsv+0j"
+      crossorigin="anonymous"></script>
+
+    <!-- Your app (module script; already deferred by spec) -->
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
+ 

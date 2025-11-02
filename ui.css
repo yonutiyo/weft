@@ -1,0 +1,181 @@
+/* Global design tokens (theme, shape) */
+:root {
+  /* Typography */
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+
+  /* Shape */
+  --radius: 0px; /* blocky everywhere */
+
+  /* Base (Classic Light) */
+  --bg: #f6f7f9;
+  --text: #0f172a;
+  --surface: #ffffff;
+  --border: #e5e7eb;
+  --muted: #6b7280;
+  --link: #4338ca;           /* default link color */
+
+  /* Controls */
+  --ctl-bg: #f6f8fa;
+  --ctl-bg-hover: #eef2f7;
+  --ctl-text: #0f172a;
+  --ctl-border: #d0d7de;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md: 0 10px 24px rgba(0,0,0,.06);
+  --shadow-lg: 0 10px 26px rgba(0,0,0,.14);
+}
+
+/* Dark theme toggle (applied FIRST; skins can override below if needed) */
+html[data-theme="dark"] {
+  --bg: #0b0f19;
+  --text: #e5e7eb;
+  --surface: #0e1422;
+  --border: #1f2937;
+  --muted: #9aa4b2;
+  --link: #8b95ff;
+
+  --ctl-bg: #1a2336;
+  --ctl-bg-hover: #22304a;
+  --ctl-text: #e5e7eb;
+  --ctl-border: #2b3a55;
+}
+
+/* === SKINS === */
+
+/* Classic */
+html[data-skin="classic"] { /* base already matches */ }
+html[data-theme="dark"][data-skin="classic"] { /* dark already set above */ }
+
+/* Solarized Light */
+html[data-skin="solarized-light"] {
+  --bg:      #fdf6e3;
+  --surface: #fffdf5;
+  --text:    #586e75;
+  --border:  #eee8d5;
+  --muted:   #657b83;
+  --link:    #268bd2;
+  --ctl-bg:        #f7f2e3;
+  --ctl-bg-hover:  #efe8d6;
+  --ctl-text:      #586e75;
+  --ctl-border:    #e6ddc7;
+}
+html[data-theme="dark"][data-skin="solarized-light"] {
+  --bg:      #002b36;
+  --surface: #073642;
+  --text:    #93a1a1;
+  --border:  #0f3a46;
+  --muted:   #839496;
+  --link:    #268bd2;
+  --ctl-bg:       #0a3946;
+  --ctl-bg-hover: #0e4553;
+  --ctl-text:     #c2d3d3;
+  --ctl-border:   #0f3a46;
+}
+
+/* Solarized Dark */
+html[data-skin="solarized-dark"] {
+  --bg:      #073642;
+  --surface: #0b4250;
+  --text:    #93a1a1;
+  --border:  #0f3a46;
+  --muted:   #9db0b0;
+  --link:    #268bd2;
+  --ctl-bg:       #0f4a59;
+  --ctl-bg-hover: #145868;
+  --ctl-text:     #d6e6e6;
+  --ctl-border:   #0f3a46;
+}
+html[data-theme="dark"][data-skin="solarized-dark"] {
+  --bg:      #002b36;
+  --surface: #073642;
+  --text:    #93a1a1;
+  --border:  #0f3a46;
+  --muted:   #839496;
+  --link:    #268bd2;
+  --ctl-bg:       #0a3946;
+  --ctl-bg-hover: #0e4553;
+  --ctl-text:     #c2d3d3;
+  --ctl-border:   #0f3a46;
+}
+
+/* Noir (neutral black/gray, proper hyperlink blue) */
+html[data-skin="noir"] {
+  /* Light */
+  --bg:      #eaeaea;
+  --surface: #ffffff;
+  --text:    #141414;
+  --border:  #d8d8d8;
+  --muted:   #666666;
+  --link:    #1e90ff; /* hyperlink blue */
+  --ctl-bg:       #f0f0f0;
+  --ctl-bg-hover: #e6e6e6;
+  --ctl-text:     #141414;
+  --ctl-border:   #d8d8d8;
+}
+html[data-theme="dark"][data-skin="noir"] {
+  /* Dark (no blue cast) */
+  --bg:      #0a0a0a;
+  --surface: #111111;
+  --text:    #e6e6e6;
+  --border:  #1f1f1f;
+  --muted:   #9a9a9a;
+  --link:    #4da3ff; /* brighter blue for contrast on near-black */
+  --ctl-bg:       #151515;
+  --ctl-bg-hover: #1b1b1b;
+  --ctl-text:     #e6e6e6;
+  --ctl-border:   #2a2a2a;
+}
+
+/* Terminal (blacker background, retro green) */
+html[data-skin="terminal"] {
+  --bg:      #0d0f0d;
+  --surface: #101310;
+  --text:    #c7ffb2;
+  --border:  #1a241a;
+  --muted:   #9ccf9a;
+  --link:    #79ff97; /* green links */
+  --ctl-bg:       #0f150f;
+  --ctl-bg-hover: #131b13;
+  --ctl-text:     #c7ffb2;
+  --ctl-border:   #1a241a;
+}
+html[data-theme="dark"][data-skin="terminal"] {
+  --bg:      #0a0c0a;
+  --surface: #0d100d;
+  --text:    #b6f8a1;
+  --border:  #172117;
+  --muted:   #8ed08b;
+  --link:    #6aff8b;
+  --ctl-bg:       #0d140d;
+  --ctl-bg-hover: #101910;
+  --ctl-text:     #b6f8a1;
+  --ctl-border:   #172117;
+}
+
+/* Paper (minimal, flat) */
+html[data-skin="paper"] {
+  --bg:      #ffffff;
+  --surface: #ffffff;
+  --text:    #111827;
+  --border:  #e5e7eb;
+  --muted:   #6b7280;
+  --link:    #2563eb; /* clean blue */
+  --ctl-bg:       #fafafa;
+  --ctl-bg-hover: #f0f0f0;
+  --ctl-text:     #111827;
+  --ctl-border:   #e5e7eb;
+  --shadow-sm: none; --shadow-md: none; --shadow-lg: none;
+}
+html[data-theme="dark"][data-skin="paper"] {
+  --bg:      #0f1115;
+  --surface: #0f1115;
+  --text:    #e5e7eb;
+  --border:  #1f2937;
+  --muted:   #9aa4b2;
+  --link:    #8db1ff;
+  --ctl-bg:       #141821;
+  --ctl-bg-hover: #1a2130;
+  --ctl-text:     #e5e7eb;
+  --ctl-border:   #1f2937;
+}

@@ -1,0 +1,17 @@
+{
+  "name": "my-text-game",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "story-pack": "./adapters/cli.mjs"
+  },
+  "scripts": {
+    "build:raw": "story-pack --in ./passages.js --raw-out ./dist/content.pack.json",
+    "build:v2": "story-pack --in ./passages.js --raw-out ./dist/content.pack.json --v2-out ./dist/content.pack.v2.json",
+    "build:deterministic": "story-pack --in ./passages.js --raw-out ./dist/content.pack.json --v2-out ./dist/content.pack.v2.json --deterministic"
+  },
+  "devDependencies": {
+    "eslint": "^9.38.0",
+    "prettier": "^3.6.2"
+  }
+}

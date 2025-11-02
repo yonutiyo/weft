@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Pack Builder (v2 / v2c — raw + deflate-b64url)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+  <style>
+    :root {
+      --font: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      --bg: #f7f7f7; --text: #111827; --muted: #666;
+      --card-bg: #ffffff; --border: #e5e7eb;
+      --btn-bg: #ffffff; --btn-text: #111827; --btn-border: #cccccc; --btn-bg-hover: #f3f4f6;
+      --input-bg: #ffffff; --input-border: #cccccc;
+      --tab-active: #2563eb; --tab-hover: #eff6ff;
+    }
+    :root[data-theme="dark"] {
+      --bg: #0b0b0c; --text: #e5e7eb; --muted: #9ca3af;
+      --card-bg: #121212; --border: #262626;
+      --btn-bg: #1a1a1a; --btn-text: #e5e7eb; --btn-border: #3a3a3a; --btn-bg-hover: #1f1f1f;
+      --input-bg: #151515; --input-border: #3a3a3a;
+      --tab-active: #3b82f6; --tab-hover: #1e293b;
+    }
+    html, body { height: 100%; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.6; }
+    main { max-width: 1100px; margin: 40px auto; background: var(--card-bg); padding: 0; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+    h1 { margin: 24px 28px 8px; font-size: 1.5rem; }
+    .subtitle { margin: 0 28px 20px; color: var(--muted); font-size: 0.95rem; }
+    .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin: 12px 0; }
+    button { padding: 10px 14px; border-radius: 10px; border: 1px solid var(--btn-border); cursor: pointer; background: var(--btn-bg); color: var(--btn-text); font-family: var(--font); font-size: 14px; transition: background 0.15s; }
+    button:hover:not(:disabled) { background: var(--btn-bg-hover); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-top: 14px; }
+    .muted { color: var(--muted); }
+    code, pre { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 4px 6px; font-family: 'Menlo', 'Monaco', 'Courier New', monospace; }
+    .grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    #error { display:none; padding: 10px 12px; border-radius: 10px; border: 1px solid #f3c2c2; background:#ffecec; color:#b91c1c; margin: 12px 28px; }
+    #status { margin:8px 28px; color:var(--text); font-size: .95rem; }
+    .progress { height: 8px; background:var(--bg); border:1px solid var(--border); border-radius:6px; overflow:hidden; margin: 8px 28px; display:none; }
+    .progress > div { height:100%; width:0%; background:#58a; transition:width .12s linear; }
+    .cols { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+
+    /* Tab System */
+    .tabs-container { border-bottom: 1px solid var(--border); }
+    .tabs { display: flex; gap: 0; padding: 0 28px; margin: 0; list-style: none; }
+    .tab { 
+      padding: 12px 20px; 
+      cursor: pointer; 
+      border-bottom: 2px solid transparent; 
+      color: var(--muted); 
+      transition: all 0.2s;
+      user-select: none;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .tab:hover { background: var(--tab-hover); color: var(--text); }
+    .tab.active { 
+      color: var(--tab-active); 
+      border-bottom-color: var(--tab-active);
+    }
+    .tab-content { display: none; padding: 24px 28px; }
+    .tab-content.active { display: block; }
+
+    #themeToggle { position: fixed; top: 12px; left: 12px; z-index: 1000; background: var(--btn-bg); color: var(--btn-text); border: 1px solid var(--btn-border); border-radius: 999px; padding: 8px 12px; line-height: 1; cursor: pointer; user-select: none; box-shadow: 0 1px 2px rgba(0,0,0,.08); font-family: var(--font); }
+    #themeToggle:hover { background: var(--btn-bg-hover); }
+
+    #preview { white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere; max-height: 280px; overflow: auto; font-size: 13px; }
+
+    /* Graph-specific styles */
+    #graphControls { display:flex; gap:8px; align-items:center; flex-wrap: wrap; }
+    #graphWrap { display:grid; grid-template-columns: 2fr 1fr; gap: 12px; align-items: stretch; margin-top: 16px; }
+    #graph { height: 600px; border: 1px solid var(--border); border-radius: 10px; background: var(--card-bg); overflow: hidden; position: relative; }
+    #graphStats { font-size: .9rem; color:var(--text); }
+    #graphLoading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      display: none;
+      z-index: 10;
+    }
+    #graphLoading.show { display: block; }
+
+    #searchBox, select, input[type="search"] {
+      padding: 8px 10px; border:1px solid var(--input-border);
+      border-radius: 8px; background: var(--input-bg); color: var(--text);
+      font-family: var(--font); font-size: 14px;
+    }
+    label { user-select: none; color: var(--text); font-size: 14px; }
+
+    /* Tag filter chips */
+    #tagChips { display:flex; gap:6px; flex-wrap:wrap; margin-top: 8px; }
+    .chip { border:1px solid var(--border); background: var(--btn-bg); color: var(--btn-text); border-radius: 999px; padding: 4px 8px; cursor: pointer; font-size: 12px; transition: all 0.15s; }
+    .chip:hover { background: var(--btn-bg-hover); }
+    .chip[aria-pressed="true"] { background: #2563eb; color: white; border-color: #1d4ed8; }
+
+    #inspector { border: 1px solid var(--border); border-radius: 10px; padding: 12px; background:var(--card-bg); }
+    #inspector h4 { margin: 0 0 8px 0; font-size: 14px; }
+    #inspectHtml { white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere; max-height: 520px; overflow: auto; font-size: 13px; }
+    #inspectTags { margin-top: 8px; font-size: .9rem; }
+    #inspectTags .chip { padding: 2px 6px; }
+
+    /* Performance indicator */
+    .perf-indicator {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+    .perf-good { background: #dcfce7; color: #166534; }
+    .perf-ok { background: #fef3c7; color: #92400e; }
+    .perf-slow { background: #fee2e2; color: #991b1b; }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      main { margin: 20px; }
+      .tabs { padding: 0 16px; }
+      .tab-content { padding: 16px; }
+      #graphWrap { grid-template-columns: 1fr; }
+      #graph { height: 400px; }
+    }
+  </style>
+
+  <script src="https://unpkg.com/cytoscape@3.26.0/dist/cytoscape.min.js"></script>
+</head>
+<body>
+  <button id="themeToggle" type="button" aria-pressed="false" title="Toggle light/dark">Light</button>
+
+  <main>
+    <h1>Pack Builder</h1>
+    <p class="subtitle">Build <code>content.pack.json</code> from <code>.weft</code> or <code>passages.js</code>. Export RAW, Compressed, and Single-file HTML. Auto-loads <code>story.weft</code> if present.</p>
+
+    <div id="error"></div>
+    <div id="status" class="muted">Idle.</div>
+    <div class="progress" id="prog"><div></div></div>
+
+    <!-- Tab Navigation -->
+    <div class="tabs-container">
+      <ul class="tabs" role="tablist">
+        <li class="tab active" data-tab="build" role="tab" aria-selected="true">Build & Export</li>
+        <li class="tab" data-tab="graph" role="tab" aria-selected="false">Graph Visualization</li>
+      </ul>
+    </div>
+
+    <!-- Tab 1: Build & Export -->
+    <div id="tab-build" class="tab-content active" role="tabpanel">
+      <section>
+        <h3>Source</h3>
+        <div class="row">
+          <button id="loadWeftBtn" type="button">Load .weft</button>
+          <input id="weftInput" type="file" accept=".weft,text/plain" multiple style="display:none" />
+          <span class="muted" style="font-size: 13px;">Default: <code>./story.weft</code> or <code>./passages.js</code></span>
+        </div>
+      </section>
+
+      <section style="margin-top: 24px;">
+        <h3>Build</h3>
+        <div class="row">
+          <button id="buildRawBtn">Build RAW (legacy v2c)</button>
+          <button id="downloadRawBtn" disabled>Download RAW JSON</button>
+        </div>
+
+        <div class="row">
+          <button id="buildCompressedBtn">Build + Compress</button>
+          <button id="downloadCompressedBtn" disabled>Download Compressed JSON</button>
+          <label><input type="checkbox" id="inlineTags" checked /> Use inline tags</label>
+        </div>
+
+        <div class="row">
+          <button id="buildSingleBtn">Build Single-file HTML</button>
+          <button id="downloadSingleBtn" disabled>Download story.html</button>
+        </div>
+      </section>
+
+      <section style="margin-top: 24px;">
+        <div class="cols">
+          <div>
+            <h3>Preview <span class="muted" style="font-size: 13px;">(start passage)</span></h3>
+            <pre class="card" id="preview"></pre>
+          </div>
+          <div>
+            <h3>Stats</h3>
+            <div id="stats" class="card grid"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab 2: Graph Visualization -->
+    <div id="tab-graph" class="tab-content" role="tabpanel">
+      <section>
+        <h3>Controls</h3>
+        <div id="graphControls" class="row">
+          <button id="renderGraphBtn">Render Graph</button>
+          <button id="fitBtn" disabled>Fit</button>
+          <button id="resetBtn" disabled>Reset View</button>
+          <label>Layout:
+            <select id="layoutSelect">
+              <option value="breadthfirst">Breadthfirst (fast, directed)</option>
+              <option value="cose" selected>COSE (force-based)</option>
+              <option value="circle">Circle (nodes in ring)</option>
+              <option value="concentric">Concentric (layered rings)</option>
+              <option value="grid">Grid (organized rows)</option>
+            </select>
+          </label>
+          <label><input type="checkbox" id="hideUnreachable" /> Hide unreachable</label>
+          <input id="searchBox" type="search" placeholder="Find passage…" />
+        </div>
+
+        <!-- Tag filters -->
+        <div class="row" style="margin-top: 16px;">
+          <input id="tagFilterInput" type="search" placeholder="Filter by tag (comma to add)…" style="flex: 1; min-width: 200px;" />
+          <label><input type="checkbox" id="tagHideMode" checked /> Hide non-matching</label>
+        </div>
+        <div id="tagChips" aria-label="Top tags"></div>
+
+        <div id="graphWrap">
+          <div id="graph">
+            <div id="graphLoading">
+              <div style="text-align: center;">
+                <div style="margin-bottom: 8px;">⏳ Rendering graph...</div>
+                <div id="graphLoadingDetail" style="font-size: 12px; color: var(--muted);"></div>
+              </div>
+            </div>
+          </div>
+          <aside id="inspector">
+            <h4 id="inspectTitle">Inspector</h4>
+            <div id="inspectHtml" class="muted">Click a node to preview its HTML.</div>
+            <div id="inspectTags"></div>
+            <div id="graphStats" class="muted" style="margin-top:8px;"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section style="margin-top: 16px;">
+        <details>
+          <summary style="cursor: pointer; user-select: none; font-weight: 500;">Performance Tips</summary>
+          <div style="margin-top: 12px; padding: 12px; background: var(--bg); border-radius: 8px; font-size: 13px;">
+            <ul style="margin: 0; padding-left: 20px;">
+              <li><strong>COSE</strong> (default for &lt;500 nodes): Natural, organic layout - best for small/medium graphs</li>
+              <li><strong>Breadthfirst</strong> (auto-selected for 500+ nodes): Fast, hierarchical - best for large graphs</li>
+              <li><strong>Circle</strong>: All nodes in a ring - good for seeing overall structure</li>
+              <li><strong>Concentric</strong>: Layered rings by importance - highlights hub nodes</li>
+              <li><strong>Grid</strong>: Organized rows and columns - cleanest for browsing</li>
+              <li>Enable <strong>Hide unreachable</strong> to reduce visual clutter</li>
+              <li>Zoom in to see labels on large graphs (automatic optimization)</li>
+              <li>Double-click a node to focus on its neighborhood</li>
+              <li>Use tag filters to work with specific subsets</li>
+            </ul>
+          </div>
+        </details>
+      </section>
+    </div>
+  </main>
+
+  <script type="module" src="./engine-manager.js?v=500"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

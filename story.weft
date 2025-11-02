@@ -1,0 +1,485 @@
+<% story.weft content begins %>
+<<set $health = 100>>
+<<set $stamina = 100>>
+<<set $hasRope = false>>
+<<set $hasKnife = false>>
+<<set $hasFlint = false>>
+<<set $distanceTraveled = 0>>
+<<set $visited = {}>>
+<<set $day = 1>>
+<<set $hour = 9>>
+<<set $food = 2>>
+<<set $water = 2>>
+<<set $injured = false>>
+<<set $cold = false>>
+<<set $wet = false>>
+
+:: introduction
+You wake to the smell of pine and damp earth. A canopy of needles sways above, the sky a pale coin flickering through the branches. Your backpack sits nearby, half-unzipped, a scattering of gear stitched into your memory more than your sight.
+
+You don’t know how long you’ve been out, only that your legs ache and your mouth is dry.
+
+What do you do?
+
+[[Check the backpack->inventory]]
+[[Look around the clearing->clearing]]
+[[Call out for help->callout]]
+
+:: inventory
+Your pack is scuffed but intact. Inside you find:
+- A crumpled map with water damage
+- A small first-aid kit
+- A half-empty water bottle
+- A compact tarp
+- A coil of cord (not quite a rope)
+- A pocketknife (blade sticky with old sap)
+- A box of matches, damp but not ruined
+
+<<set $hasKnife = true>>
+<<set $hasFlint = true>>
+<<set $water += 1>>
+<<set $food += 1>>
+
+You take stock and repack it with care. Decisions matter.
+
+[[Return to the clearing->clearing]]
+
+:: clearing
+The clearing is a patchwork of moss and trampled grass. A faint game trail leads north. You hear, distantly, the murmur of water—maybe a stream—to the west. To the east the trees tighten, dense and shadowed.
+
+Time passes while you hesitate.
+
+<<set $hour += 1>>
+
+Where now?
+
+[[Follow the game trail north->trail-north]]
+[[Head toward the sound of water (west)->toward-stream]]
+[[Probe the dense woods to the east->deep-woods]]
+[[Shout again, louder->callout]]
+
+:: callout
+You call out, voice rasping in the cool air. A jay answers with a scold. No other response comes—no crackle of radios, no thump of rotors.
+
+Your throat burns.
+
+<<set $stamina -= 5>>
+<<set $hour += 1>>
+
+[[Back to the clearing->clearing]]
+
+:: trail-north
+The game trail threads between saplings and old stumps. Tracks mark the soil: deer, maybe boar. The ground is dry here. After ten minutes the trail forks around a fallen fir.
+
+Do you take the high route across the trunk (faster, riskier), or detour around (slower, safer)?
+
+[[Climb across the trunk->trunk-crossing]]
+[[Detour around through brush->brush-detour]]
+
+:: trunk-crossing
+The bark is slick with lichen.
+
+<<set $climbRoll = random()>>
+<<if $climbRoll < 0.25>>
+Your foot skids. You slam a shin, then sprawl. Pain flares.
+
+<<set $health -= 10>>
+<<set $injured = true>>
+<<set $stamina -= 10>>
+<<else>>
+You balance and step, light and deliberate. The trunk carries you past a gulch strangled with nettles.
+<</if>>
+
+<<set $hour += 1>>
+
+[[Continue north along the trail->northern-stretch]]
+
+:: brush-detour
+You push through brush. Branches rake your sleeves and tug at your hair. It eats time but feels safer.
+
+<<set $stamina -= 5>>
+<<set $hour += 1>>
+
+[[Continue north along the trail->northern-stretch]]
+
+:: northern-stretch
+The trail rises. Through a break in the trees you glimpse ridgelines, blue and layered. Smoke threads the far horizon—or maybe a cloud shadow.
+
+You could press on to higher ground for a better vantage, or pivot toward water. Hunger is a whisper; thirst is a voice.
+
+[[Seek higher ground->ridge-approach]]
+[[Pivot west toward water->toward-stream]]
+[[Forage a little on the way->forage]]
+
+:: forage
+You scan the understory for berries and edibles.
+
+<<set $forageRoll = random()>>
+<<if $forageRoll < 0.2>>
+You grab at glossy leaves and catch your palm on thorns. Useless.
+
+<<set $stamina -= 3>>
+<<elseif $forageRoll < 0.65>>
+You find tart berries clinging to a thorny cane. Not much, but something.
+
+<<set $food += 1>>
+<<set $stamina += 2>>
+<<else>>
+Jackpot: a patch of late-season blackberries sheltered under a snag. You eat and pocket a handful.
+
+<<set $food += 2>>
+<<set $stamina += 5>>
+<</if>>
+
+<<set $hour += 1>>
+
+[[Back to the trail options->northern-stretch]]
+
+:: ridge-approach
+The ridge is steeper than it looked. Your calves complain. The air thins and cools, sap-sharp.
+
+At the crest, the forest falls away on one side to a narrow stream glittering westward. To the north, a darker line suggests a road or clear-cut.
+
+[[Head to the stream->toward-stream]]
+[[Investigate the dark line (possible road)->north-road]]
+[[Rest and take stock->camp-check]]
+
+:: camp-check
+You inventory your status.
+
+Health: {{$health}}
+Stamina: {{$stamina}}
+Food rations: {{$food}}
+Water rations: {{$water}}
+Day {{$day}}, around {{$hour}}:00
+Distance traveled (km): {{floor($distanceTraveled)}}
+
+You can keep moving or consider making camp if light is fading.
+
+[[Keep moving->ridge-approach]]
+[[Make a quick shelter->quick-shelter]]
+
+:: quick-shelter
+A lean-to with the tarp between two pines. It won’t win awards, but it will shed dew. You gather a little duff for insulation.
+
+<<set $stamina -= 5>>
+<<set $hour += 1>>
+
+[[Sleep->sleep]]
+[[Break it down and move on->ridge-approach]]
+
+:: sleep
+Sleep comes in ragged threads. You wake stiff but steadier.
+
+<<set $day += 1>>
+<<set $hour = 7>>
+<<set $stamina += 15>>
+<<set $cold = false>>
+<<set $wet = false>>
+
+You’re hungry and thirsty when you wake.
+
+<<set $food -= 1>>
+<<set $water -= 1>>
+
+[[Pack up and move->ridge-approach]]
+
+:: toward-stream
+You angle downslope, following the land’s logic. The murmur grows until it is the only sound: water over stone.
+
+At the bank, a narrow stream threads between boulders, cold and clear. It’s not deep, but the rocks are slick.
+
+[[Drink and refill->drink-refill]]
+[[Follow the stream west->stream-west]]
+[[Try to cross to the other side->stream-cross]]
+
+:: drink-refill
+You sip first to test and wait. No bitterness. You fill the bottle, then drink again with shaking patience.
+
+<<set $water += 2>>
+<<set $stamina += 5>>
+<<set $hour += 1>>
+
+[[Follow the stream west->stream-west]]
+[[Build a small cairn as a marker->cairn]]
+
+:: cairn
+You stack three stones where the bank shelves. A small act, but it anchors you to the place.
+
+<<set $hour += 1>>
+
+[[Head west along the stream->stream-west]]
+
+:: stream-west
+The stream runs beneath leaning cedars. Animal prints cluster in the muddy margins: hoof, pad, the long drag of something heavy.
+
+You consider moving along the bank (fast but uneven) or pushing into the gentler forest just above (slower, quieter).
+
+[[Stay on the bank->bank-march]]
+[[Move through the upper forest->upper-forest]]
+
+:: stream-cross
+You eye a narrow, hurried run between rocks.
+
+<<set $streamRoll = random()>>
+<<if $streamRoll < 0.2>>
+Your heel slips. You drop to a knee in icy water, then scramble up soaked.
+
+<<set $wet = true>>
+<<set $stamina -= 10>>
+<<set $health -= 5>>
+<<else>>
+You step clean from stone to stone, breath held, then release it on the far bank.
+<</if>>
+
+<<set $hour += 1>>
+
+[[Continue west along the stream->stream-west]]
+
+:: bank-march
+You make good time but your ankles ache from the cambers. The sun arcs tense through the trees.
+
+<<set $distanceTraveled += 2>>
+<<set $stamina -= 5>>
+<<set $hour += 1>>
+
+[[Keep following the water->stream-west]]
+[[Cut inland toward that dark line->north-road]]
+
+:: upper-forest
+The upper forest is easier walking: duff underfoot, fern and salal. Birdsong shifts when you pass.
+
+<<set $distanceTraveled += 1>>
+<<set $stamina -= 2>>
+<<set $hour += 1>>
+
+[[Continue west->stream-west]]
+[[Angle north toward the dark line->north-road]]
+
+:: north-road
+You break out onto a grader-widened strip: a decommissioned logging road, grass in the ruts, a freshness of crushed sap where something heavy passed not long ago.
+
+Tracks point east-west. West leads toward lower land; east back into hills.
+
+[[Head west on the road->road-west]]
+[[Head east on the road->road-east]]
+[[Leave a marker in the ditch->ditch-marker]]
+
+:: ditch-marker
+You lash a branch upright with cord, flagging it with a strip of tarp corner. If you come back, it’ll catch your eye.
+
+<<set $hour += 0>>
+
+[[Choose a direction->north-road]]
+
+:: road-west
+You walk, shoulders loose into a rhythm. The road bends and the trees open onto a service clearing: a transformer box, a low utility shack with a steel door, a chain-link fence sagging on one side.
+
+[[Check the shack->utility-shack]]
+[[Check the transformer->transformer]]
+[[Rest here briefly->rest-here]]
+
+:: road-east
+The road climbs, gravel thinning to dirt. It narrows into the suggestion of a road and then back into forest.
+
+After another half-hour, you concede it’s not promising.
+
+<<set $hour += 1>>
+<<set $stamina -= 5>>
+
+[[Return and head west->road-west]]
+
+:: rest-here
+You sit on the warm hood of a rusted truck frame abandoned decades ago. You drink, flex hands, count breaths.
+
+<<set $stamina += 10>>
+<<set $hour += 1>>
+
+[[Back to decisions->road-west]]
+
+:: transformer
+The transformer hums faintly—live. A service tag reads LAST INSPECTION 2013. There’s a padlocked service panel.
+
+You don’t have bolt cutters. But you might wedge the fence gap to slip through safely.
+
+[[Try to squeeze through the fence gap->fence-gap]]
+[[Leave it and check the shack->utility-shack]]
+
+:: fence-gap
+You push the fence aside carefully, wary of arcing. It groans but gives.
+
+Inside, you can look for a phone line or tool cache.
+
+[[Search for a phone line->phone-line]]
+[[Search for tools->tool-cache]]
+
+:: phone-line
+A stub conduit leads underground; any landline is buried and dead or private. Nothing you can exploit.
+
+[[Back out->road-west]]
+
+:: tool-cache
+You circle the transformer pad and find only dead leaves and a raccoon midden. No luck.
+
+[[Back out->road-west]]
+
+:: utility-shack
+The shack door is shut but not locked. Inside: dust, a utility table, an emergency water box, an orange emergency phone, and a faded evacuation map taped to the wall.
+
+[[Check the water->emergency-water]]
+[[Check the phone->emergency-phone]]
+[[Read the map->evac-map]]
+
+:: emergency-water
+The water box sloshes when you lift it. The seal looks intact. You puncture it with the knife and drink carefully, then decant into your bottle.
+
+<<set $water += 2>>
+<<set $stamina += 5>>
+
+[[Back->utility-shack]]
+
+:: emergency-phone
+You lift the phone. No dial tone; then, faintly, a recorded beep-beep. It may be power-only, no line.
+
+Still, you could try a call routine and see if it pings any maintenance relay.
+
+<<set $shortcutRoll = random()>>
+<<if $shortcutRoll < 0.15>>
+A click, then—miracle—a ring. You freeze. A human voice answers, startled, “Service? Hello?”
+
+You spit words, location details tumbling. The line crackles and drops, but not before you give the substation code printed above the rack.
+
+Hope flares. Rescue may be coming, though nothing is guaranteed.
+
+[[Wait nearby in the shade->wait-nearby]]
+<<elseif $shortcutRoll < 0.5>>
+The phone cycles a test tone and then dies. No line. No rescue—yet.
+
+[[Hang up and consult the map->evac-map]]
+<<else>>
+The handset’s cord frays in your hand. It’s dead plastic, a promise that never was.
+
+[[Put it down and check the map->evac-map]]
+<</if>>
+
+:: wait-nearby
+You settle in the shack’s shade, rationing sips and listening for engines.
+
+Time crawls.
+
+<<set $hour += 2>>
+
+If no one arrives by dusk, you’ll need a plan.
+
+[[Give it another hour->wait-nearby-2]]
+[[Leave now and follow the road west->road-west]]
+
+:: wait-nearby-2
+You wait longer. In the near distance, a crow laughs like a hinge. No vehicles. The hum of the transformer is the only constant.
+
+<<set $hour += 1>>
+
+You can’t bet your life on chance.
+
+[[Leave and follow the road west->road-west]]
+
+:: evac-map
+The faded map shows service roads linking to a county road to the southwest. A marked stream crosses your path—likely the one you followed.
+
+If the map is still accurate, the southwest line might lead you to a ranger station.
+
+[[Head southwest toward the county road->county-road]]
+[[Return to the stream to reorient->toward-stream]]
+
+:: county-road
+The service road degrades to a rutted track, then a proper gravel road. Tire marks suggest occasional use. After an hour, you reach a weathered county-maintained sign: COUNTY 14—RANGER STATION 6 MI.
+
+It’s a walk, but it’s a line.
+
+<<set $distanceTraveled += 4>>
+<<set $hour += 1>>
+<<set $stamina -= 10>>
+
+[[Walk the road toward the station->road-march]]
+[[Rest briefly and eat->road-rest]]
+
+:: road-rest
+You sit on the culvert and eat a ration.
+
+<<set $food -= 1>>
+<<set $stamina += 8>>
+<<set $hour += 1>>
+
+[[Continue toward the station->road-march]]
+
+:: road-march
+The road unspools beneath steady feet. Sun angles down; long shadows herd you along the ditches. Your breath finds a sustainable groove.
+
+<<set $distanceTraveled += 3>>
+<<set $stamina -= 8>>
+<<set $hour += 1>>
+
+[[Keep marching->road-march-2]]
+[[Take a side track signed “FIRE ACCESS B7”->fire-access]]
+
+:: fire-access
+The fire access road dives into denser forest. It promises a shorter route if the map in your head is right, but it might dead-end.
+
+[[Take the fire access->fire-commit]]
+[[Stay on County 14->road-march-2]]
+
+:: fire-commit
+You commit, boots crunching pinecones. The road narrows and weaves. Your legs complain but obey.
+
+<<set $traverseRoll = random()>>
+<<if $traverseRoll < 0.25>>
+A washout eats a section of the road, forcing a scramble through suck-mud and slick roots. You make it, crusted and panting.
+
+<<set $stamina -= 12>>
+<<set $health -= 5>>
+<<elseif $traverseRoll < 0.75>>
+It’s slower than you hoped, but it keeps westing. No dead end, not yet.
+<<else>>
+You stumble on a fresh-cut detour marker: B7 TEMP REROUTE →. Relief loosens your shoulders; even if it’s old, someone maintained this recently.
+<</if>>
+
+<<set $hour += 1>>
+
+[[Push on->fire-continue]]
+
+:: fire-continue
+The access road spits you onto a wider grade you recognize from the evac map. You’re closer to your goal.
+
+<<set $distanceTraveled += 2>>
+<<set $hour += 1>>
+
+[[Continue toward the station->last-stretch]]
+
+:: road-march-2
+County 14 climbs and then descends in a long S-curve. At the apex, a trailhead sign appears: RANGER STATION LOOP 2.8 MI.
+
+You smile despite yourself.
+
+<<set $distanceTraveled += 2>>
+<<set $hour += 1>>
+
+[[Take the loop trail->last-stretch]]
+
+:: last-stretch
+The loop trail is well-blazed. The forest opens to a meadow where the roofline of a ranger complex peeks above the treeline—solar panels tilted, an antenna steady in the blue.
+
+You have to cross the meadow, and that means exposure. But there’s no reason to hide from the open now.
+
+Distance traveled today (km): {{floor($distanceTraveled)}}
+
+[[Walk to the ranger station->ranger-station]]
+
+:: ranger-station
+A ranger in a green shirt steps onto the porch as you approach, hand lifted. “Hey there,” they call. “You okay?”
+
+Words clog in your throat. You nod, then nod again, and the porch steps rise to meet you.
+
+You made it.
+
+[[Try again->introduction]]
+<% story.weft content ends %>

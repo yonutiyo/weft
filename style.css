@@ -1,0 +1,43 @@
+@import url("./ui.css");
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+}
+
+/* Layout shell is just a block wrapper now; no grid columns to change */
+#layout { min-height: 100vh; }
+
+/* The game card remains centered relative to the window at all times */
+#app {
+  max-width: 760px;
+  margin: 48px auto;          /* auto horizontally centers in the viewport */
+  background: var(--surface);
+  color: var(--text);
+  padding: 24px 28px;
+  border-radius: var(--radius);
+  line-height: 1.65;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+}
+
+/* Typography & links */
+h1 { margin-top: 0; font-size: 1.6rem; }
+p  { margin: .6rem 0; }
+nav { margin-top: 1.1rem; display: grid; gap: .45rem; }
+
+a {
+  color: var(--link);
+  text-decoration: none;
+  border-bottom: 1px solid var(--link);
+  display: block;
+  padding: 7px 0;
+  transition: opacity .12s ease;
+}
+a:hover { opacity: .9; }
+
+.muted { color: var(--muted); }
